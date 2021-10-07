@@ -5,59 +5,80 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @ResponseBody
+@RequestMapping(value="hello", method={RequestMethod.GET, RequestMethod.POST})
 public class HelloController {
 
-    @GetMapping("hello")
+    @GetMapping
     public String hello(){
         return "<body>" +
                 "<h1>Here we GO!!!</h1>" +
                 "<p>This is the start of something <b>BIG</b>!</p>" +
                 "</body>";
     }
-
+    //  Lives at '/hello/goodbye'
     @GetMapping("goodbye")
     public String goodbye(){
         return "Farewell, Spring!";
     }
 
-    //  Handles request of the form '/hellothere?name=LaunchCode&age=46'
+    //  Handles request of the form '/hello/hellothere?name=LaunchCode&age=46'
     @GetMapping("hellothere")
     public String helloWithQueryParam(@RequestParam String name, int age) {
         return "Hello there, " + name + ". You are " + age + " years old.";
     }
 
-    //    Handles request of the form '/helloyou/LaunchCode'
-    @GetMapping("/hello/{name}")
+    //    Handles request of the form '/hello/helloname/LaunchCode'
+    @GetMapping("/helloname/{name}")
     public String helloWithPathParam(@PathVariable String name) {
         return "Hello! I love that your name is " + name + "! So pretty.";
     }
 
-    //  Redirects a GET request to ROOT page to a specified web page
-    @GetMapping
-    public String redirectTime() {
-        return "redirect:/hello";
-    }
-
-    @GetMapping("form")
+    //  Creates web form [name, language] which submits a name to '/hello/helloformhandler'
+    @GetMapping("formget")
     public String helloForm() {
-    //  Going to '/form' creates this web form which submits a name to '/helloform'
         return "<html><body>" +
-                "<form action='helloform'>" +
-                "<input type='text' name='name'/>" +
+                "<form action='helloformhandler'>" +
+                "<input type='text' name='name' placeholder='Name'/>" +
+                "<select name='language'>" +
+                    "<option value='choose'>Choose a language</option>" +
+                    "<option value='English'>English</option>" +
+                    "<option value='Latin'>Latin</option>" +
+                    "<option value='French'>French</option>" +
+                    "<option value='German'>German</option>" +
+                "</select>" +
                 "<input type='submit' value='Greet me!'/>" +
                 "</form></body></html>";
     }
-    @RequestMapping(value = "helloform", method = {RequestMethod.GET, RequestMethod.POST})
-    public String helloFormHandler(@RequestParam String name) {
+
     //  Handles input form data from '/form' and returns greeting
-        return "Hi, nice to meet you " + name + ". I come in peace!";
+    @RequestMapping(value="helloformhandler")
+    public String helloFormHandler(@RequestParam String name, @RequestParam String language) {
+        if (language.equals("English")) {
+            return "Hi, " + name + ", nice to meet you.";
+        } else if (language.equals("Latin")) {
+            return "Salve, " + name + ", volup est te convenisse.";
+        } else if (language.equals("French")) {
+            return "Bonjour, " + name + ".";
+        } else if (language.equals("German")) {
+            return "Guten tag, " + name + ", wie geht's?";
+        } else {
+            return "Please select a language.";
+        }
     }
-    @GetMapping("formPost")
+
+    //  Version of above that handles POST requests
+    @PostMapping("formpost")
     public String helloForm2() {
-        //  Version of above that handles POST requests
         return "<html><body>" +
-                "<form action='helloform' method='post'>" +
-                "<input type='text' name='name'/>" +
+                "<form action='helloformhandler' method='post'>" +
+                "<input type='text' name='name' placeholder='Name'/>" +
+                "<select name='language'>" +
+                    "<option value='choose'>Choose a language</option>" +
+                    "<option value='English'>English</option>" +
+                    "<option value='Latin'>Latin</option>" +
+                    "<option value='French'>French</option>" +
+                    "<option value='German'>German</option>" +
+                "</select>" +
                 "<input type='submit' value='Greet me!'/>" +
                 "</form></body></html>";
     }
